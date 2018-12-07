@@ -27,7 +27,7 @@ if [[ -e /etc/os-release ]]; then
     RUN_WORKER=0
     URL_DATABASE='sqlite:////tmp/sqlite.db'
     URL_ENDPOINT='http://127.0.0.1'
-    URL_MESSAGING='amqp://guest:guest@localhost:5672/'
+    URL_MESSAGING='amqp://fractal:guest@localhost:5672/'
 
     while getopts e:m:d:i:r: FLAG; do
         case $FLAG in
@@ -104,6 +104,9 @@ if [[ -e /etc/os-release ]]; then
     if [[ $INSTALL_MESSAGING -eq 1 ]]; then
         if [[ $ID = 'ubuntu' || $ID = 'debian' ]]; then
             sudo apt-get install -y rabbitmq-server
+            sudo rabbitmqctl add_user fractal guest
+            sudo rabbitmqctl set_user_tags fractal administrator
+            sudo rabbitmqctl set_permissions -p / fractal ".*" ".*" ".*"
         elif [[ $ID = 'fedora' ]]; then
             sudo dnf install -y rabbitmq-server
             sudo systemctl enable rabbitmq-server
